@@ -6,25 +6,33 @@
  * Author: Matej Marusak
  */
 
+#include <time.h>
+#include <stdlib.h>
 #include "src/dll.h"
 #include "src/problem.h"
+#include "src/solution_finder.h"
 
 int main() {
-    dll_t* students= dll();
-    item* x = insert_last(students, 10, 11);
-    x = insert_after(students, x, 5, 15);
-    x = insert_before(students, x, 8, 14);
-    x = insert_first(students, 7, 14);
-    x = insert_before(students, x, 1, 15);
-    print_dll(students);
-    teardown(students);
+    int seed = time(NULL);
+    srand(seed);
 
     FILE *fp;
+    //fp = fopen("InputFiles/competition06.tim", "r");
     fp = fopen("test.txt", "r");
     problem_t* p = problem(fp);
     fclose(fp);
 
     print_problem(p);
+
+    init_solver();
+
+    timetable_t* tt = timetable(events_count(p));
+    bool found = find_feasible_timetable(p, &tt);
+    if (!found)
+        printf("Solution not found\n");
+    print_timetable(tt);
+
+    delete_timetable(tt);
     delete_problem(p);
     return 0;
 }

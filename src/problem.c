@@ -119,6 +119,27 @@ int* event_features(problem_t* problem, int n){
     return problem->event_feature + n * problem->n_features;
 }
 
+dll_t* find_events(problem_t* p, int student_id, int* count){
+    *count = 0;
+    dll_t* new_list = dll();
+    int* all_events = student_events(p, student_id);
+    for (int i = 0; i < p->n_events; i++){
+        if (all_events[i] != 0){
+            insert_last(new_list, i, -1);
+            *count += 1;
+        }
+    }
+    return new_list;
+}
+
+dll_t* get_events(problem_t* p){
+    dll_t* new_list = dll();
+    for (int i = 0; i < p->n_events; i++){
+        insert_last(new_list, i, -1);
+    }
+    return new_list;
+}
+
 void delete_problem(problem_t* problem){
     free(problem->room_sizes);
     free(problem->student_event);

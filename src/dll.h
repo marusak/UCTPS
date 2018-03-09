@@ -36,8 +36,20 @@ item* insert_last(dll_t* dll, int value, int count);
 // Insert to the first place
 item* insert_first(dll_t* dll, int value, int count);
 
+// Get nth item
+item* get_nth(dll_t* dll, int n);
+
+// Get count by value
+int get_count(dll_t* dll, int value);
+
+// Set count to item with value
+void set_count_to_value(dll_t* dll, int value, int count);
+
 // Print list
 void print_dll(dll_t* dll);
+
+// Remove first item where value is as given
+void drop_item(dll_t* dll, int value);
 
 //Remove one item
 void remove_item(dll_t* dll, item* item);

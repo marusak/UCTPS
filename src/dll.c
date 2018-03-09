@@ -97,6 +97,54 @@ item* insert_first(dll_t* dll, int value, int count){
     return insert_before(dll, dll->first, value, count);
 }
 
+void drop_item(dll_t* dll, int value){
+    item* cur = dll->first;
+    while (cur != NULL) {
+        if (cur->value == value){
+            remove_item(dll, cur);
+            return;
+        }
+        cur = cur->next;
+    }
+    exit(13);
+}
+
+item* get_nth(dll_t* dll, int n){
+    int i = 0;
+    item* cur = dll->first;
+    while (cur != NULL) {
+        if (i == n)
+            return cur;
+        else {
+            i++;
+            cur = cur->next;
+        }
+    }
+    exit(13);
+}
+
+int get_count(dll_t* dll, int value){
+    item* cur = dll->first;
+    while (cur != NULL) {
+        if (cur->value == value)
+            return cur->count;
+        else
+            cur = cur->next;
+    }
+    exit(13);
+}
+
+void set_count_to_value(dll_t* dll, int value, int count){
+    item* cur = dll->first;
+    while (cur != NULL) {
+        if (cur->value == value){
+            cur->count = count;
+            break;
+        }
+        cur = cur->next;
+    }
+}
+
 // Print list
 void print_dll(dll_t* dll){
     item* current = dll->first;

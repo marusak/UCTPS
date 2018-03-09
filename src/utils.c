@@ -43,7 +43,7 @@ char* ints_to_string(int* values, int count){
             output += n + 1;
         }
         else
-            exit(11);
+            exit(12);
     }
     return r_output;
 }
