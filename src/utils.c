@@ -5,6 +5,7 @@
  */
 
 #include "utils.h"
+#include <string.h>
 
 void* safe_malloc(size_t size) {
     void* new_memory = malloc(size);
@@ -33,6 +34,7 @@ int get_binary(char x){
 
 char* ints_to_string(int* values, int count){
     char* output = safe_malloc(13 * count);
+    memset(output, '\0', 13*count);
     char* r_output = output;
     for (int i = 0; i < count; i++){
         int n = sprintf(output, "%d", values[i]);
