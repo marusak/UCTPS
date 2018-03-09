@@ -1,3 +1,12 @@
+/*
+ * Timetable structure and related methods
+ *
+ * Author: Matej Marusak
+ */
+
+#ifndef UCTPS_TIMETABLE_H
+#define UCTPS_TIMETABLE_H
+
 typedef struct course_t {
     int timeslot; // color in graph coloring
     int room;
@@ -23,3 +32,4 @@ void print_timetable(timetable_t* tt);
 // Delete timetable
 void delete_timetable(timetable_t* tt);
 
+#endif

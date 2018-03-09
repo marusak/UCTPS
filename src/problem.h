@@ -4,6 +4,9 @@
  * Author: Matej Marusak
  */
 
+#ifndef UCTPS_PROBLEM_H
+#define UCTPS_PROBLEM_H
+
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -54,3 +57,5 @@ void delete_problem(problem_t* problem);
 
 // Print the problem (mainly for debugging)
 void print_problem(problem_t* problem);
+
+#endif

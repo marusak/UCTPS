@@ -4,6 +4,9 @@
  * Author: Matej Marusak
  */
 
+#ifndef UCTPS_UTILS_H
+#define UCTPS_UTILS_H
+
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -21,3 +24,5 @@ int get_binary(char x);
 
 // Convert list of ints into string of space separated values
 char* ints_to_string(int* values, int count);
+
+#endif

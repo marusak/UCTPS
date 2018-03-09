@@ -4,6 +4,9 @@
  * Author: Matej Marusak
  */
 
+#ifndef UCTPS_DLL_H
+#define UCTPS_DLL_H
+
 #include "utils.h"
 
 typedef struct item_t {
@@ -41,3 +44,5 @@ void remove_item(dll_t* dll, item* item);
 
 // Remove the whole dll
 void teardown(dll_t* dll);
+
+#endif
