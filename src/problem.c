@@ -130,7 +130,7 @@ void delete_problem(problem_t* problem){
 void print_problem(problem_t* problem){
     char* tmp;
     printf("Events: %d\nRooms: %d\nFeatures: %d\nStudents: %d\n\n",
-            problem->n_events, problem->n_rooms, problem->n_events, problem->n_students);
+            problem->n_events, problem->n_rooms, problem->n_features, problem->n_students);
     printf("Rooms sizes: ");
     for (int i = 0; i < problem->n_rooms; i++)
         printf("%d ", room_size(problem, i));
