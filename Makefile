@@ -12,3 +12,6 @@ uctps: $(BUILD_FILES) uctps.c
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
 	mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) -c -o $@ $<
+
+clean:
+	rm -rf $(BUILD_DIR)
