@@ -1,5 +1,6 @@
 #include "solution_finder.h"
 #include "dll.h"
+#include "error.h"
 
 void scramble(){
     for (int i = 0; i < TIMESLOTS ; i++){
@@ -192,7 +193,7 @@ bool find_feasible_timetable(problem_t *p, timetable_t** tt){
         item* cur = students[i].courses->first;
         while (cur != NULL){
             if ((*tt)->courses[cur->value].timeslot != -1  && (*tt)->courses[cur->value].timeslot != cur->count)
-                exit(11);
+                error("Internal error", INTERNAL_ERROR);
             (*tt)->courses[cur->value].timeslot = cur->count;
             cur = cur->next;
         }

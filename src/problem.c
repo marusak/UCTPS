@@ -6,6 +6,7 @@
 
 #include "problem.h"
 #include "utils.h"
+#include "error.h"
 
 problem_t* problem(FILE *fl){
     problem_t* np = malloc(sizeof(problem_t));
@@ -19,22 +20,22 @@ problem_t* problem(FILE *fl){
     // Read first line containing all parameters
     np->n_events = get_number(&rest);
     if (!np->n_events)
-        exit(3);
+        error("Missing events count", INPUT_FILE_ERROR);
     rest++;
 
     np->n_rooms = get_number(&rest);
     if (!np->n_rooms)
-        exit(3);
+        error("Missing rooms count", INPUT_FILE_ERROR);
     rest++;
 
     np->n_features = get_number(&rest);
     if (!np->n_features)
-        exit(3);
+        error("Missing features count", INPUT_FILE_ERROR);
     rest++;
 
     np->n_students = get_number(&rest);
     if (!np->n_students)
-        exit(3);
+        error("Missing students count", INPUT_FILE_ERROR);
 
     // Read all room_sizes
     np->room_sizes = safe_malloc(sizeof(int) * (np->n_rooms));
@@ -44,7 +45,7 @@ problem_t* problem(FILE *fl){
         rest = buffer;
         *(itr) = get_number(&rest);
         if (!*(itr))
-            exit(3);
+            error("Missing room size", INPUT_FILE_ERROR);
         itr++;
     }
 

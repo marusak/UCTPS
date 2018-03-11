@@ -5,7 +5,7 @@
  */
 
 #include "dll.h"
-#include <stdio.h>
+#include "error.h"
 
 // Create new double linked list
 dll_t* dll() {
@@ -106,7 +106,8 @@ void drop_item(dll_t* dll, int value){
         }
         cur = cur->next;
     }
-    exit(13);
+
+    error("Internal error", INTERNAL_ERROR);
 }
 
 item* get_nth(dll_t* dll, int n){
@@ -120,7 +121,8 @@ item* get_nth(dll_t* dll, int n){
             cur = cur->next;
         }
     }
-    exit(13);
+    error("Internal error", INTERNAL_ERROR);
+    return NULL;
 }
 
 int get_count(dll_t* dll, int value){
@@ -131,7 +133,8 @@ int get_count(dll_t* dll, int value){
         else
             cur = cur->next;
     }
-    exit(13);
+    error("Internal error", INTERNAL_ERROR);
+    return 0;
 }
 
 void set_count_to_value(dll_t* dll, int value, int count){

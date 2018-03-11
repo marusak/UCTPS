@@ -6,17 +6,18 @@
 
 #include "utils.h"
 #include <string.h>
+#include "error.h"
 
 void* safe_malloc(size_t size) {
     void* new_memory = malloc(size);
     if (! new_memory)
-        exit(10);
+        error("Was not able to alloc any more memory", MALLOC_ERROR);
     return new_memory;
 }
 
 void get_line(char* buffer, int max_size, FILE* fl){
     if (!fgets(buffer, max_size, fl))
-        exit(2);
+        error("Input file shorter than expected", INPUT_FILE_ERROR);
     buffer[max_size] = '\0';
 }
 
@@ -29,7 +30,8 @@ int get_binary(char x){
         return 1;
     if (x == '0')
         return 0;
-    exit(3);
+    error("Input file contains unexpected value", INPUT_FILE_ERROR);
+    return 0;
 }
 
 char* ints_to_string(int* values, int count){
@@ -43,7 +45,7 @@ char* ints_to_string(int* values, int count){
             output += n + 1;
         }
         else
-            exit(12);
+            error("Internal error", INTERNAL_ERROR);
     }
     return r_output;
 }
