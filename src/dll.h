@@ -45,6 +45,16 @@ int get_count(dll_t* dll, int value);
 // Set count to item with value
 void set_count_to_value(dll_t* dll, int value, int count);
 
+// Insert last if with given value not in list
+void insert_last_if_not_in(dll_t* dll, int value, int count);
+
+// Count items with count as given
+int dll_len_with_count(dll_t* dll, int ref_count);
+
+// Set count to all items
+void set_count_to_all(dll_t* dll, int value);
+
+
 // Print list
 void print_dll(dll_t* dll);
 

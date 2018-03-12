@@ -129,6 +129,81 @@ int count_uncolored_students(sgt_t* students){
     return count;
 }
 
+bool exists_unresolved_course(dll_t* timeslot){
+    item* cur = timeslot->first;
+    while (cur != NULL){
+        if (cur->count == -1)
+            return true;
+        cur = cur->next;
+    }
+    return false;
+}
+
+item* unresolved_with_lowest_values(dll_t* timeslot, dll_t** all_rooms, int* count){
+    int min = 100000000;
+    item* min_item = NULL;
+    item* cur = timeslot->first;
+    while (cur != NULL){
+        if (cur->count == -1){
+            int count = dll_len_with_count(all_rooms[cur->value], -1);
+            if (count < min){
+                min = count;
+                min_item = cur;
+            }
+        }
+        cur = cur->next;
+    }
+    *count = min;
+    return min_item;
+}
+
+dll_t* find_appropraite_rooms(problem_t *p, int course_id){
+    dll_t* new_list = dll();
+    int students_count = students_count_in_course(p, course_id);
+    for (int i = 0; i < rooms_count(p); i++)
+        if (room_size(p, i) >= students_count)
+            if (event_fits_room(p, course_id, i))
+                insert_last(new_list, i, -1);
+    return new_list;
+}
+
+item* random_fiting_room(dll_t* rooms, int count){
+    int req = rand() % count;
+    int cnt = 0;
+    item* cur = rooms->first;
+    while (cur != NULL){
+        if (cur->count == -1){
+            if (cnt == req)
+                return cur;
+            cnt++;
+            }
+        cur = cur->next;
+    }
+    error("Internal error", INTERNAL_ERROR);
+    return NULL;
+}
+
+void cleanup_rooms(dll_t** rooms, int count){
+    for (int i = 0; i < count; i++){
+        item *cur = rooms[i]->first;
+        while (cur != NULL){
+            cur->count = -1;
+            cur = cur->next;
+        }
+    }
+}
+
+void set_up_rooms(dll_t** rooms, int count, int req, int value){
+    for (int i = 0; i < count; i++){
+        item *cur = rooms[i]->first;
+        while (cur != NULL){
+            if (cur->value == req)
+                cur->count = value;
+            cur = cur->next;
+        }
+    }
+}
+
 bool find_feasible_timetable(problem_t *p, timetable_t** tt){
     item* s_course = NULL;
 
@@ -146,6 +221,16 @@ bool find_feasible_timetable(problem_t *p, timetable_t** tt){
     sgt_t* students = create_students(p);
     uncolored_students = students_count(p);
     student_count = uncolored_students;
+
+    // List of timeslots, with accepted rooms
+    dll_t** timeslots = (dll_t**)safe_malloc(sizeof(dll_t*) * TIMESLOTS);
+    for (int i = 0; i < TIMESLOTS; i++)
+        timeslots[i] = dll();
+
+    // Create list of courses with appropriate rooms
+    dll_t** rooms = (dll_t**)safe_malloc(sizeof(dll_t*) * students_count(p));
+    for (int i = 0; i < events_count(p); i++)
+        rooms[i] = find_appropraite_rooms(p, i);
 
     int count = 0; // we cannot try constructing feasible solution until end of time
     while (uncolored_students > 0 && count < 5000){ // TODO debug this magic number
@@ -195,12 +280,10 @@ bool find_feasible_timetable(problem_t *p, timetable_t** tt){
             if ((*tt)->courses[cur->value].timeslot != -1  && (*tt)->courses[cur->value].timeslot != cur->count)
                 error("Internal error", INTERNAL_ERROR);
             (*tt)->courses[cur->value].timeslot = cur->count;
+            insert_last_if_not_in(timeslots[cur->count], cur->value, -1);
             cur = cur->next;
         }
     }
-
-    // Clean up students - they are solved
-    cleanup_students(students);
 
     /* Step 2: Check if timeslot is room coverable
      *
@@ -212,7 +295,35 @@ bool find_feasible_timetable(problem_t *p, timetable_t** tt){
      *     solution and we need to start all over.
      */
 
+    // For each timeslot
+    for (int i = 0; i < TIMESLOTS; i++){
+        count = 0;
+        while (exists_unresolved_course(timeslots[i]) && count < 1000){ //debug this magic number
+            // Select unresolved course with lowest untaken rooms assigned
+            int rooms_count;
+            item* course = unresolved_with_lowest_values(timeslots[i], rooms, &rooms_count);
+            if (! course || rooms_count == 0){
+                count++;
+                set_count_to_all(timeslots[i], -1);
+                cleanup_rooms(rooms, events_count(p));
+                continue;
+            }
+            item* room = random_fiting_room(rooms[course->value], rooms_count);
+            set_up_rooms(rooms, events_count(p), room->value, course->value);
+            course->count = room->value;
+        }
+        if (count >= 1000)
+            return false;
+        cleanup_rooms(rooms, events_count(p));
+    }
 
+    // Clean up students
+    cleanup_students(students);
+
+    // Clean up timeslots
+    for (int i = 0; i < TIMESLOTS; i++)
+        teardown(timeslots[i]);
+    free(timeslots);
 
     return true;
 }

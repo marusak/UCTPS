@@ -10,6 +10,7 @@
 //According to the dataset, always count only 45 timeslots
 #define TIMESLOTS 45
 
+#include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include "dll.h"
@@ -50,8 +51,14 @@ int room_size(problem_t* problem, int n);
 // Get nth student's events
 int* student_events(problem_t* problem, int n);
 
+// Get count of students in course
+int students_count_in_course(problem_t* problem, int course_id);
+
 // Get nth room's features
 int* room_features(problem_t* problem, int n);
+
+// Check if event fits into room based on features
+bool event_fits_room(problem_t* p, int event_id, int room_id);
 
 // Get nth event's features
 int* event_features(problem_t* problem, int n);

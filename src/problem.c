@@ -120,6 +120,26 @@ int* event_features(problem_t* problem, int n){
     return problem->event_feature + n * problem->n_features;
 }
 
+int students_count_in_course(problem_t* problem, int course_id){
+    int count = 0;
+
+    for (int i = 0; i < problem->n_students; i++)
+        if( student_events(problem, i)[course_id] == 1)
+            count++;
+
+    return count;
+}
+
+bool event_fits_room(problem_t* p, int event_id, int room_id){
+    int* event_f = event_features(p, event_id);
+    int* room_f = room_features(p, room_id);
+    for (int i = 0; i < p->n_features; i++)
+        if (event_f[i] == 1)
+            if (room_f[i] == 0)
+                return false;
+    return true;
+}
+
 dll_t* find_events(problem_t* p, int student_id, int* count){
     *count = 0;
     dll_t* new_list = dll();

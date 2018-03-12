@@ -17,8 +17,8 @@ int main() {
     srand(seed);
 
     FILE *fp;
-    //fp = fopen("InputFiles/competition06.tim", "r");
-    fp = fopen("test.txt", "r");
+    fp = fopen("InputFiles/competition06.tim", "r");
+    //fp = fopen("test.txt", "r");
     problem_t* p = problem(fp);
     fclose(fp);
 
@@ -30,7 +30,7 @@ int main() {
     bool found = find_feasible_timetable(p, &tt);
     if (!found)
         printf("Solution not found\n");
-    print_timetable(tt);
+    //print_timetable(tt);
 
     delete_timetable(tt);
     delete_problem(p);

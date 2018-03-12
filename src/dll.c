@@ -148,6 +148,37 @@ void set_count_to_value(dll_t* dll, int value, int count){
     }
 }
 
+int dll_len_with_count(dll_t* dll, int ref_count){
+    int count = 0;
+    item* cur = dll->first;
+    while (cur != NULL) {
+        if (cur->count == ref_count)
+            count++;
+        cur = cur->next;
+    }
+    return count;
+}
+
+void set_count_to_all(dll_t* dll, int value){
+    item* cur = dll->first;
+    while (cur != NULL) {
+        cur->count = value;
+        cur = cur->next;
+    }
+}
+
+
+void insert_last_if_not_in(dll_t* dll, int value, int count){
+    item* cur = dll->first;
+    while (cur != NULL) {
+        if (cur->value == value){
+            return;
+        }
+        cur = cur->next;
+    }
+    insert_last(dll, value, count);
+}
+
 // Print list
 void print_dll(dll_t* dll){
     item* current = dll->first;
