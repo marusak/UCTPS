@@ -317,6 +317,14 @@ bool find_feasible_timetable(problem_t *p, timetable_t** tt){
         cleanup_rooms(rooms, events_count(p));
     }
 
+    for (int i = 0; i < TIMESLOTS; i++){
+        item* cur = timeslots[i]->first;
+        while (cur != NULL){
+            (*tt)->courses[cur->value].room = cur->count;
+            cur = cur->next;
+        }
+    }
+
     // Clean up students
     cleanup_students(students);
 
