@@ -27,6 +27,6 @@ void delete_timetable(timetable_t *tt){
 
 void print_timetable(timetable_t *tt){
     for (int i = 0; i < tt->size; i++){
-        printf("C: %d  T: %d  R: %d\n",i, tt->courses[i].timeslot, tt->courses[i].room);
+        printf("%d %d\n",tt->courses[i].timeslot, tt->courses[i].room);
     }
 }
