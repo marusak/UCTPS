@@ -12,13 +12,16 @@
 #include "src/problem.h"
 #include "src/solution_finder.h"
 
-int main() {
+int main(int argc, char **argv) {
     int seed = time(NULL);
     srand(seed);
+    if(argc != 2){
+        printf("Incorrect usage\n");
+        return 1;
+    }
 
     FILE *fp;
-    fp = fopen("InputFiles/competition06.tim", "r");
-    //fp = fopen("test.txt", "r");
+    fp = fopen(argv[1], "r");
     problem_t* p = problem(fp);
     fclose(fp);
 
