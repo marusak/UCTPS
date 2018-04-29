@@ -228,7 +228,7 @@ bool find_feasible_timetable(problem_t *p, timetable_t** tt){
         timeslots[i] = dll();
 
     // Create list of courses with appropriate rooms
-    dll_t** rooms = (dll_t**)safe_malloc(sizeof(dll_t*) * students_count(p));
+    dll_t** rooms = (dll_t**)safe_malloc(sizeof(dll_t*) * events_count(p));
     for (int i = 0; i < events_count(p); i++)
         rooms[i] = find_appropraite_rooms(p, i);
 
