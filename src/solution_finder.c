@@ -304,7 +304,7 @@ bool find_feasible_timetable(problem_t *p, timetable_t** tt){
             item* course = unresolved_with_lowest_values(timeslots[i], rooms, &rooms_count);
             if (! course || rooms_count == 0){
                 count++;
-                set_count_to_all(timeslots[i], -1);
+                clean_dll(timeslots[i]);
                 cleanup_rooms(rooms, events_count(p));
                 continue;
             }

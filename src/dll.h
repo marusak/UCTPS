@@ -64,6 +64,9 @@ void drop_item(dll_t* dll, int value);
 //Remove one item
 void remove_item(dll_t* dll, item* item);
 
+//Remove all items from list
+void clean_dll(dll_t* dll);
+
 // Remove the whole dll
 void teardown(dll_t* dll);
 
