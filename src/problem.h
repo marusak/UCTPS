@@ -8,7 +8,7 @@
 #define UCTPS_PROBLEM_H
 
 //According to the dataset, always count only 45 timeslots
-#define TIMESLOTS 45
+#define TIMESLOTS 3
 
 #include <stdbool.h>
 #include <stdlib.h>

@@ -232,10 +232,17 @@ bool find_feasible_timetable(problem_t *p, timetable_t** tt){
     for (int i = 0; i < events_count(p); i++)
         rooms[i] = find_appropraite_rooms(p, i);
 
-    int count = 0; // we cannot try constructing feasible solution until end of time
+    int last_i = 0;
+    int count; // we cannot try constructing feasible solution until end of time
+
+color_graph:
+    count = 0;
+    uncolored_students = count_uncolored_students(students);
+    printf("  >>>>>> %d\n",uncolored_students);
     while (uncolored_students > 0 && count < 5000){ // TODO debug this magic number
         // Select random student
         sgt_t* s = students + rand() % students_count(p);
+
 
         uncolored_students = count_uncolored_students(students);
 
@@ -269,7 +276,7 @@ bool find_feasible_timetable(problem_t *p, timetable_t** tt){
     }
 
     if (count >= 5000){
-        cleanup_students(students);
+        //cleanup_students(students);
         return false;
     }
 
@@ -277,8 +284,10 @@ bool find_feasible_timetable(problem_t *p, timetable_t** tt){
     for (int i = 0; i < student_count; i++){
         item* cur = students[i].courses->first;
         while (cur != NULL){
-            if ((*tt)->courses[cur->value].timeslot != -1  && (*tt)->courses[cur->value].timeslot != cur->count)
-                error("Internal error", INTERNAL_ERROR);
+            //if ((*tt)->courses[cur->value].timeslot != -1  && (*tt)->courses[cur->value].timeslot != cur->count){
+            //    printf("We failAA\n");
+            //    error("Internal error", INTERNAL_ERROR);
+            //}
             (*tt)->courses[cur->value].timeslot = cur->count;
             insert_last_if_not_in(timeslots[cur->count], cur->value, -1);
             cur = cur->next;
@@ -298,24 +307,55 @@ bool find_feasible_timetable(problem_t *p, timetable_t** tt){
     // For each timeslot
     for (int i = 0; i < TIMESLOTS; i++){
         count = 0;
-        while (exists_unresolved_course(timeslots[i]) && count < 1000){ //debug this magic number
+        while (exists_unresolved_course(timeslots[i]) && count < 10000){ //debug this magic number
             // Select unresolved course with lowest untaken rooms assigned
             int rooms_count;
             item* course = unresolved_with_lowest_values(timeslots[i], rooms, &rooms_count);
             if (! course || rooms_count == 0){
                 count++;
-                set_count_to_all(timeslots[i], -1);
+                // HERE was set all to -1, with clean_dll ti found no problem...
+                clean_dll(timeslots[i]);
                 cleanup_rooms(rooms, events_count(p));
                 continue;
             }
             item* room = random_fiting_room(rooms[course->value], rooms_count);
             set_up_rooms(rooms, events_count(p), room->value, course->value);
+            printf("Setting room value %d\n",room->value);
             course->count = room->value;
         }
-        if (count >= 1000)
-            return false;
+        if (count >= 10000){
+            printf("  %d\n",i);
+            for (int r = 0; r <= i; r++)
+                clean_dll(timeslots[r]);
+            cleanup_rooms(rooms, events_count(p));
+
+            // Uncolor timetable
+            for (int i = 0; i < student_count; i++){
+                item* cur = students[i].courses->first;
+                while (cur != NULL){
+                    (*tt)->courses[cur->value].timeslot = -1;
+                    cur = cur->next;
+                }
+            }
+
+            //if (last_i < i || (double)rand() / (double)RAND_MAX < 0.1) {
+                for (int x = 0; x < events_count(p) / 50; x++){
+                    sgt_t* s = students + rand() % students_count(p);
+                    item* victim = get_nth(s->courses, rand() % s->courses_n);
+                    uncolor_course(victim, students);
+                }
+                last_i = i;
+                goto color_graph;
+            //}
+            /*
+            else
+                recalculate_with_the_old_one;
+            */
+        }
         cleanup_rooms(rooms, events_count(p));
     }
+
+    // Set up rooms
 
     // Clean up students
     cleanup_students(students);

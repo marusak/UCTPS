@@ -216,6 +216,11 @@ void remove_item(dll_t* dll, item* item){
     free(item);
 }
 
+void clean_dll(dll_t* dll){
+    while(dll->first != NULL)
+        remove_item(dll, dll->first);
+}
+
 // Remove the whole dll
 void teardown(dll_t* dll){
     while (dll->first != NULL)

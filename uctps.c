@@ -12,25 +12,32 @@
 #include "src/problem.h"
 #include "src/solution_finder.h"
 
-int main() {
+int main(int argc, char **argv) {
+    if (argc != 2){
+        printf("Incorrect usage\n");
+        return 1;
+    }
     int seed = time(NULL);
     srand(seed);
 
     FILE *fp;
-    fp = fopen("InputFiles/competition06.tim", "r");
-    //fp = fopen("test.txt", "r");
+    fp = fopen(argv[1], "r");
     problem_t* p = problem(fp);
     fclose(fp);
 
-    print_problem(p);
+    //print_problem(p);
 
     init_solver();
 
     timetable_t* tt = timetable(events_count(p));
     bool found = find_feasible_timetable(p, &tt);
-    if (!found)
-        printf("Solution not found\n");
-    //print_timetable(tt);
+    while (!found){
+        delete_timetable(tt);
+        tt = timetable(events_count(p));
+        found = find_feasible_timetable(p, &tt);
+    }
+    printf("FOUND\n");
+    print_timetable(tt);
 
     delete_timetable(tt);
     delete_problem(p);
