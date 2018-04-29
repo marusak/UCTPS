@@ -29,6 +29,17 @@ void create_student(sgt_t** s, problem_t* p, int student_id){
     new_s->colors_n = TIMESLOTS;
 }
 
+
+sgt_t copy_student(sgt_t* old){
+    sgt_t new;
+    new.courses = copy_dll(old->courses);
+    new.colors = copy_dll(old->colors);
+    new.colors_n = old->colors_n;
+    new.courses_n = old->courses_n;
+    return new;
+}
+
+
 sgt_t* create_students(problem_t *p){
     sgt_t* new_s = (sgt_t*)safe_malloc(sizeof(sgt_t) * students_count(p));
     sgt_t* return_p = new_s;
@@ -207,6 +218,9 @@ void set_up_rooms(dll_t** rooms, int count, int req, int value){
 bool find_feasible_timetable(problem_t *p, timetable_t** tt){
     item* s_course = NULL;
 
+    sgt_t* copy = NULL;
+    bool no_copy = true;
+
     /* Step 1: Graph Coloring
      *
      * Select random student, select random color, that the student does not yet
@@ -232,7 +246,12 @@ bool find_feasible_timetable(problem_t *p, timetable_t** tt){
     for (int i = 0; i < events_count(p); i++)
         rooms[i] = find_appropraite_rooms(p, i);
 
-    int count = 0; // we cannot try constructing feasible solution until end of time
+    int count; // we cannot try constructing feasible solution until end of time
+    int last_i = 0;
+
+color_graph:
+    count = 0;
+    uncolored_students = count_uncolored_students(students);
     while (uncolored_students > 0 && count < 5000){ // TODO debug this magic number
         // Select random student
         sgt_t* s = students + rand() % students_count(p);
@@ -304,7 +323,7 @@ bool find_feasible_timetable(problem_t *p, timetable_t** tt){
             item* course = unresolved_with_lowest_values(timeslots[i], rooms, &rooms_count);
             if (! course || rooms_count == 0){
                 count++;
-                clean_dll(timeslots[i]);
+                set_count_to_all(timeslots[i], -1);
                 cleanup_rooms(rooms, events_count(p));
                 continue;
             }
@@ -312,10 +331,59 @@ bool find_feasible_timetable(problem_t *p, timetable_t** tt){
             set_up_rooms(rooms, events_count(p), room->value, course->value);
             course->count = room->value;
         }
-        if (count >= 1000)
-            return false;
-        cleanup_rooms(rooms, events_count(p));
+        if (count >= 1000){
+            for (int r = 0; r < TIMESLOTS; r++)
+                clean_dll(timeslots[r]);
+            cleanup_rooms(rooms, events_count(p));
+
+            // Uncolor timetable
+            for (int i = 0; i < student_count; i++){
+                item* cur = students[i].courses->first;
+                while (cur != NULL){
+                    (*tt)->courses[cur->value].timeslot = -1;
+                    cur = cur->next;
+                }
+            }
+            if (last_i < i || (double)rand() / (double)RAND_MAX < 0.1) {
+                // Destroy old copy
+                if (!no_copy){
+                    for (int i = 0; i < student_count; i++){
+                        teardown(copy[i].colors);
+                        teardown(copy[i].courses);
+                    }
+                }
+                // Save copy of old solution
+                copy = (sgt_t*)safe_malloc(sizeof(sgt_t) * students_count(p));
+                for (int i = 0; i < student_count; i++){
+                    copy[i] = copy_student(&students[i]);
+                }
+                no_copy = false;
+                for (int x = 0; x < events_count(p) / 50; x++){
+                    sgt_t* s = students + rand() % students_count(p);
+                    item* victim = get_nth(s->courses, rand() % s->courses_n);
+                    uncolor_course(victim, students);
+                }
+                last_i = i;
+                goto color_graph;
+            }
+            else {
+                for (int i = 0; i < student_count; i++){
+                    teardown(students[i].colors);
+                    teardown(students[i].courses);
+                }
+                for (int i = 0; i < student_count; i++)
+                    students[i] = copy_student(&copy[i]);
+
+                for (int x = 0; x < events_count(p) / 50; x++){
+                    sgt_t* s = students + rand() % students_count(p);
+                    item* victim = get_nth(s->courses, rand() % s->courses_n);
+                    uncolor_course(victim, students);
+                }
+                goto color_graph;
+            }
+        }
     }
+    cleanup_rooms(rooms, events_count(p));
 
     for (int i = 0; i < TIMESLOTS; i++){
         item* cur = timeslots[i]->first;

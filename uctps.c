@@ -25,7 +25,7 @@ int main(int argc, char **argv) {
     problem_t* p = problem(fp);
     fclose(fp);
 
-    print_problem(p);
+    //print_problem(p);
 
     init_solver();
 
@@ -33,7 +33,7 @@ int main(int argc, char **argv) {
     bool found = find_feasible_timetable(p, &tt);
     if (!found)
         printf("Solution not found\n");
-    //print_timetable(tt);
+    print_timetable(tt);
 
     delete_timetable(tt);
     delete_problem(p);

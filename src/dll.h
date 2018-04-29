@@ -54,6 +54,8 @@ int dll_len_with_count(dll_t* dll, int ref_count);
 // Set count to all items
 void set_count_to_all(dll_t* dll, int value);
 
+// Create deep copy of dll
+dll_t* copy_dll(dll_t* old);
 
 // Print list
 void print_dll(dll_t* dll);

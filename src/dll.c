@@ -15,6 +15,18 @@ dll_t* dll() {
     return new_dll;
 }
 
+
+dll_t* copy_dll(dll_t* old){
+    dll_t *new_dll = dll();
+    item* cur = old->first;
+    while (cur != NULL) {
+        insert_last(new_dll, cur->value, cur->count);
+        cur = cur->next;
+    }
+    return new_dll;
+}
+
+
 // Insert after item
 item* insert_after(dll_t* dll, item* prev, int value, int count){
     item* new_item = (item*)safe_malloc(sizeof(item));

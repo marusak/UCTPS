@@ -23,6 +23,8 @@ typedef struct scg_t{
     int courses_n;
 }sgt_t;
 
+sgt_t copy_student(sgt_t *old);
+
 // Find random timetable that does not break any hard constraints
 bool find_feasible_timetable(problem_t* p, timetable_t** tt);
 
