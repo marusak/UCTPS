@@ -46,7 +46,7 @@ int main(int argc, char **argv) {
         penalty = generation(tts, N, p);
     }
 
-    timetable_t* tt = best_timetable(tts, N);
+    timetable_t* tt = best_timetable(tts, N, p);
     print_timetable(tt);
 
     for(int i = 0; i < N; i++)

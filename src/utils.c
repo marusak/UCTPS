@@ -49,3 +49,36 @@ char* ints_to_string(int* values, int count){
     }
     return r_output;
 }
+
+int compare(const void* a, const void* b) {
+     int int_a = *((int*) a);
+     int int_b = *((int*) b);
+
+     if (int_a == int_b)
+         return 0;
+     else if (int_a < int_b)
+         return -1;
+     else
+         return 1;
+}
+
+int count_between(int* tmp, int from, int to, int max_count){
+    int count = 0;
+    for (int i = 0; i < max_count; i++){
+        if (tmp[i] >= from && tmp[i] <= to)
+            count++;
+        if (tmp[i] > to)
+            break;
+    }
+    return count;
+}
+
+bool has_value(int* tmp, int value, int max_count){
+    for (int i = 0; i < max_count; i++){
+        if (tmp[i] == value)
+            return true;
+        if (tmp[i] > value)
+            return false;
+    }
+    return false;
+}
