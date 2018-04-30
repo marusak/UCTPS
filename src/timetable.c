@@ -89,7 +89,8 @@ int stays_feasible(timetable_t* tt, int course_id, int new_timeslot, problem_t* 
 }
 
 void move_course(timetable_t* tt, int course_id, int new_timeslot, int new_room){
-    // TODO
+    tt->courses[course_id].timeslot = new_timeslot;
+    tt->courses[course_id].room = new_room;
 }
 
 void delete_timetable(timetable_t *tt){
