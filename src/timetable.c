@@ -13,6 +13,15 @@ timetable_t* timetable(int courses_n){
     return new_tt;
 }
 
+timetable_t* copy_timetable(timetable_t* tt){
+    timetable_t* new = timetable(tt->size);
+    for (int i = 0; i < tt->size; i++){
+        new->courses[i].timeslot = tt->courses[i].timeslot;
+        new->courses[i].room = tt->courses[i].room;
+    }
+    return new;
+}
+
 void set_timeslot(timetable_t *tt, int course, int value){
     tt->courses[course].timeslot = value;
 }

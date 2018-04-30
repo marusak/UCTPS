@@ -3,10 +3,11 @@
 
 // Create new generation
 int generation(timetable_t** tts, int n, problem_t* p){
-    mutate(tts, n, p);
+    timetable_t** pool = (timetable_t**)safe_malloc(sizeof(timetable_t*) * 2 * n);
+    int pool_size = mutate(tts, n, p, pool);
     for (int i = 0; i < n; i++)
         local_improvement(tts[i]);
-    roulette(tts, n);
+    roulette(tts, pool, n, pool_size);
     timetable_t* tt = best_timetable(tts, n, p);
     return count_score(tt, p);
 }
@@ -27,9 +28,12 @@ timetable_t* best_timetable(timetable_t** tts, int n, problem_t* p){
 }
 
 // Mutate 20% of courses in 20% of timetables
-void mutate(timetable_t** tts, int n, problem_t* p){
+int mutate(timetable_t** tts, int n, problem_t* p, timetable_t** pool){
+    int new = 0;
     for (int i = 0; i < n/5; i++) { // 20% of timetables will be mutated
         timetable_t* mutant = tts[rand() % n];
+        pool[new] = copy_timetable(mutant);
+        new++;
         int c = 0;
         for (int j = 0; j < mutant->size/5; j++){ // 20% courses
             bool r = move_course_randomly(mutant, rand() % mutant->size, p);
@@ -41,6 +45,7 @@ void mutate(timetable_t** tts, int n, problem_t* p){
             }
         }
     }
+    return new;
 }
 
 // Find improved solutions
@@ -49,7 +54,7 @@ void local_improvement(timetable_t* tt){
 }
 
 // Roulette wheel for new  population
-void roulette(timetable_t** tts, int n){
+void roulette(timetable_t** tts, timetable_t** pool, int basic_size, int pool_size){
     //TODO
 }
 

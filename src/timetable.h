@@ -25,6 +25,9 @@ int tmp[500];
 // Create new timetable
 timetable_t* timetable(int courses_n);
 
+// Create deep copy of timetable
+timetable_t* copy_timetable(timetable_t* tt);
+
 // Set course's timeslot
 void set_timeslot(timetable_t* tt, int course, int value);
 
