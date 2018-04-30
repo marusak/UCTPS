@@ -12,13 +12,13 @@
 #include "problem.h"
 
 // Create new generation
-int generation(timetable_t** tts, int n);
+int generation(timetable_t** tts, int n, problem_t* p);
 
 // Get best timetable
 timetable_t* best_timetable(timetable_t** tts, int n);
 
 // Mutate 20% of courses in 20% of timetables
-void mutate(timetable_t** tts);
+void mutate(timetable_t** tts, int n, problem_t* p);
 
 // Find improved solutions
 void local_improvement(timetable_t* tt);

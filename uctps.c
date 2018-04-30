@@ -43,7 +43,7 @@ int main(int argc, char **argv) {
     int penalty = 100;
     int remaining_generations = 30;
     while(penalty != 0 && remaining_generations > 0){
-        penalty = generation(tts, N);
+        penalty = generation(tts, N, p);
     }
 
     timetable_t* tt = best_timetable(tts, N);
