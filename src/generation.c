@@ -16,14 +16,17 @@ int generation(timetable_t** tts, int n, problem_t* p){
 timetable_t* best_timetable(timetable_t** tts, int n, problem_t* p){
     int tmp;
     int min = count_score(tts[0], p);
+    int all = 0;
     timetable_t* min_tt = tts[0];
     for (int i = 1; i < n; i++){
         tmp = count_score(tts[i], p);
+        all += tmp;
         if (tmp < min){
             min = tmp;
             min_tt = tts[i];
         }
     }
+    printf("%d ",all/n);
     return min_tt;
 }
 
