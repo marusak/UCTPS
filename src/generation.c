@@ -12,6 +12,7 @@ int generation(timetable_t** tts, int n, problem_t* p){
     }
     roulette(tts, pool, n, pool_size, p);
     timetable_t* tt = best_timetable(tts, n, p);
+    free(pool);
     return count_score(tt, p);
 }
 
@@ -29,7 +30,6 @@ timetable_t* best_timetable(timetable_t** tts, int n, problem_t* p){
             min_tt = tts[i];
         }
     }
-    printf("%d ",all/n);
     return min_tt;
 }
 
@@ -167,15 +167,13 @@ void roulette(timetable_t** tts, timetable_t** pool, int basic_size, int pool_si
             gen -= tmp2[j];
             if (gen <= 0) {
                 if (tmp2[j] > min) {
-                    // FIXME
-                    //delete_timetable(tts[j]);
+                    delete_timetable(tts[j]);
                     tts[j] = pool[pool_size - 1];
                     sum -= tmp2[j];
                     tmp2[j] = tmp2[basic_size + pool_size - 1];
                     pool_size--;
                 } else {
-                    // FIXME
-                    //delete_timetable(pool[pool_size - 1]);
+                    delete_timetable(pool[pool_size - 1]);
                     sum -= tmp2[basic_size + pool_size - 1];
                     pool_size--;
                 }
@@ -189,8 +187,7 @@ void roulette(timetable_t** tts, timetable_t** pool, int basic_size, int pool_si
             gen -= tmp2[basic_size + j];
             if (gen <= 0) {
                 if (tmp2[basic_size + j] > min) {
-                    //FIXME
-                    //delete_timetable(pool[j]);
+                    delete_timetable(pool[j]);
                     sum -= tmp2[basic_size + j];
                     if (j != pool_size -1){
                         pool[j] = pool[pool_size - 1];
@@ -198,11 +195,12 @@ void roulette(timetable_t** tts, timetable_t** pool, int basic_size, int pool_si
                     }
                     pool_size--;
                 } else { // minimal is in pool, that is not fine, keep it
-                    //FIXME
-                    //delete_timetable(tts[0]);
+                    delete_timetable(tts[0]);
                     tts[0] = pool[j];
+                    pool[j] = pool[pool_size - 1];
                     sum -= tmp2[0];
                     tmp2[0] = tmp2[basic_size + j];
+                    tmp2[basic_size + j] = tmp2[pool_size + basic_size -1];
                     pool_size--;
                 }
                 found = true;
