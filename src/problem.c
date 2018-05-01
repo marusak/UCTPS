@@ -9,8 +9,8 @@
 #include "error.h"
 
 problem_t* problem(FILE *fl){
-    problem_t* np = malloc(sizeof(problem_t));
-    char* buffer = malloc(sizeof(char) * (BUF_SIZE + 1));
+    problem_t* np = safe_malloc(sizeof(problem_t));
+    char* buffer = safe_malloc(sizeof(char) * (BUF_SIZE + 1));
     char* rest;
     int* itr;
 
