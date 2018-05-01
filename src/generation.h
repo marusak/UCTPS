@@ -12,6 +12,7 @@
 #include "problem.h"
 
 int tmp1[500];
+int tmp2[500];
 
 // Create new generation
 int generation(timetable_t** tts, int n, problem_t* p);

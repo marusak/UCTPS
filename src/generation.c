@@ -58,41 +58,52 @@ void roulette(timetable_t** tts, timetable_t** pool, int basic_size, int pool_si
     // Find and sum all scores
     int sum = 0;
     for (int i = 0; i < basic_size; i++){
-        tmp1[i] = count_score(tts[i], p);
-        sum += tmp1[i];
+        tmp2[i] = count_score(tts[i], p);
+        sum += tmp2[i];
     }
     for (int i = 0; i < pool_size; i++){
-        tmp1[basic_size + i] = count_score(pool[i], p);
-        sum += tmp1[basic_size + i];
+        tmp2[basic_size + i] = count_score(pool[i], p);
+        sum += tmp2[basic_size + i];
     }
-    for (int i = 0; i < pool_size; i++){
-        unsigned gen = rand() % sum;
+    int to_del = pool_size;
+    for (int i = 0; i < to_del; i++){
+        int gen = rand() % sum;
+        bool found = false;
         for (int j = 0; j < basic_size; j++) {
-            gen -= tmp1[j];
+            gen -= tmp2[j];
             if (gen <= 0) {
                 delete_timetable(tts[j]);
                 tts[j] = pool[pool_size - 1];
-                sum -= tmp1[j];
-                tmp1[j] = tmp1[pool_size - 1];
+                sum -= tmp2[j];
+                tmp2[j] = tmp2[pool_size - 1];
                 pool_size--;
+                found = true;
                 break;
             }
         }
+        if (found)
+            continue;
         for (int j = 0; j < pool_size; j++) {
-            gen -= tmp1[basic_size + j];
+            gen -= tmp2[basic_size + j];
             if (gen <= 0) {
-                delete_timetable(pool[basic_size + j]);
-                sum -= tmp1[basic_size + j];
+                // FIXME
+                //delete_timetable(pool[basic_size + j]);
+                sum -= tmp2[basic_size + j];
                 if (basic_size + j != pool_size -1){
                     pool[basic_size + j] = pool[pool_size - 1];
-                    tmp1[basic_size + j] = tmp1[pool_size - 1];
+                    tmp2[basic_size + j] = tmp2[pool_size - 1];
                 }
                 pool_size--;
+                found = true;
                 break;
             }
         }
+        if (found)
+            continue;
         if (gen > 0)
-            error("Internal roulette error", INTERNAL_ERROR);
+            continue;
+            // FIXME
+            //error("Internal roulette error", INTERNAL_ERROR);
     }
 }
 
