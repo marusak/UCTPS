@@ -78,10 +78,16 @@ void roulette(timetable_t** tts, timetable_t** pool, int basic_size, int pool_si
             gen -= tmp2[j];
             if (gen <= 0) {
                 if (tmp2[j] > min) {
-                    delete_timetable(tts[j]);
+                    // FIXME
+                    //delete_timetable(tts[j]);
                     tts[j] = pool[pool_size - 1];
                     sum -= tmp2[j];
-                    tmp2[j] = tmp2[pool_size - 1];
+                    tmp2[j] = tmp2[basic_size + pool_size - 1];
+                    pool_size--;
+                } else {
+                    // FIXME
+                    //delete_timetable(pool[pool_size - 1]);
+                    sum -= tmp2[basic_size + pool_size - 1];
                     pool_size--;
                 }
                 found = true;
@@ -93,26 +99,27 @@ void roulette(timetable_t** tts, timetable_t** pool, int basic_size, int pool_si
         for (int j = 0; j < pool_size; j++) {
             gen -= tmp2[basic_size + j];
             if (gen <= 0) {
-                // FIXME
-                //delete_timetable(pool[basic_size + j]);
-                sum -= tmp2[basic_size + j];
                 if (tmp2[basic_size + j] > min) {
-                    if (basic_size + j != pool_size -1){
-                        pool[basic_size + j] = pool[pool_size - 1];
-                        tmp2[basic_size + j] = tmp2[pool_size - 1];
+                    //FIXME
+                    //delete_timetable(pool[j]);
+                    sum -= tmp2[basic_size + j];
+                    if (j != pool_size -1){
+                        pool[j] = pool[pool_size - 1];
+                        tmp2[basic_size + j] = tmp2[basic_size + pool_size - 1];
                     }
+                    pool_size--;
+                } else { // minimal is in pool, that is not fine, keep it
+                    //FIXME
+                    //delete_timetable(tts[0]);
+                    tts[0] = pool[j];
+                    sum -= tmp2[0];
+                    tmp2[0] = tmp2[basic_size + j];
                     pool_size--;
                 }
                 found = true;
                 break;
             }
         }
-        if (found)
-            continue;
-        if (gen > 0)
-            continue;
-            // FIXME
-            //error("Internal roulette error", INTERNAL_ERROR);
     }
 }
 
