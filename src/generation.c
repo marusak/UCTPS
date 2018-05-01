@@ -113,11 +113,30 @@ void local_improvement(timetable_t* tt, problem_t* p){
             tt->courses[i].timeslot = t1;
     }
 
-    //TODO N4 - sth
+    //TODO N4 - Rotate events in randomly selected part of timetable
+    signed tj = rand() % TIMESLOTS;
+    signed ti = rand() % TIMESLOTS;
+    while (ti == tj)
+        ti = rand() % TIMESLOTS;
+    if (ti > tj){
+        int old = ti;
+        ti =tj;
+        tj = old;
+    }
+    for(int i = 0; i < tt->size; i++){
+        if (tt->courses[i].timeslot == ti)
+            tt->courses[i].timeslot = tj;
+        else if (tt->courses[i].timeslot > ti && tt->courses[i].timeslot <= tj)
+            tt->courses[i].timeslot = tt->courses[i].timeslot - 1;
+    }
+
+    //
+
     //TODO N5 - Move highest penalty course from 10% of random to random slot
     //TODO N6 - N5 with 20%
     //TODO N7 - N5 but to slot, that generates lowest penalty
     //TODO N8 - N7 with 20 percents
+
     //TODO N9 - kempe chain on random course and random timeslot
     //TODO N10 - N9 but use highest penalty course from 5% of random courses
     //TODO N11 - N10 with 20%
