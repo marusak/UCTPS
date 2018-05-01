@@ -78,19 +78,19 @@ int stays_feasible(timetable_t* tt, int course_id, int new_timeslot, problem_t* 
 
     // Check if exists free room, that has enough capacity and satisfy features
     for(int i = 0; i < p->n_rooms; i++){
+        bool is_free = true;
         for(int j = 0; j < conflicting_events; j++){
             if (tt->courses[tmp[j]].room == i)
+                is_free = false;
+        }
+        if (is_free) {
+            if (needed_capacity > room_size(p,i))
                 continue;
-            else { // Not used room
-                if (needed_capacity > room_size(p,i))
+            else {
+                if (event_fits_room(p, course_id, i))
+                    return i;
+                else
                     continue;
-                else {
-                    if (event_fits_room(p, course_id, i))
-                        return i;
-                    else
-                        continue;
-                }
-
             }
         }
     }
