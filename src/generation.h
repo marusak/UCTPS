@@ -24,7 +24,7 @@ timetable_t* best_timetable(timetable_t** tts, int n, problem_t* p);
 int mutate(timetable_t** tts, int n, problem_t* p, timetable_t** pool);
 
 // Find improved solutions
-void local_improvement(timetable_t* tt);
+void local_improvement(timetable_t* tt, problem_t* p);
 
 // Roulette wheel for new  population
 void roulette(timetable_t** tts, timetable_t** pool, int basic_size, int pool_size, problem_t* p);

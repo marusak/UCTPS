@@ -5,8 +5,11 @@
 int generation(timetable_t** tts, int n, problem_t* p){
     timetable_t** pool = (timetable_t**)safe_malloc(sizeof(timetable_t*) * 2 * n);
     int pool_size = mutate(tts, n, p, pool);
-    for (int i = 0; i < n; i++)
-        local_improvement(tts[i]);
+    for (int i = 0; i < n; i++){
+        pool[pool_size] = copy_timetable(tts[i]);
+        local_improvement(pool[pool_size], p);
+        pool_size++;
+    }
     roulette(tts, pool, n, pool_size, p);
     timetable_t* tt = best_timetable(tts, n, p);
     return count_score(tt, p);
@@ -52,8 +55,72 @@ int mutate(timetable_t** tts, int n, problem_t* p, timetable_t** pool){
 }
 
 // Find improved solutions
-void local_improvement(timetable_t* tt){
-    //TODO
+void local_improvement(timetable_t* tt, problem_t* p){
+    int c = 0;
+    // N1 - Swap timeslots of two random courses
+    while(1){
+        int c1 = rand() % tt->size;
+        int c2 = rand() % tt->size;
+        while (c1 == c2)
+            c2 = rand() % tt->size;
+
+        int old_room = tt->courses[c2].room;
+        int old_timeslot = tt->courses[c2].timeslot;
+        tt->courses[c2].timeslot = -1;
+        tt->courses[c2].room = -1;
+        int c1_room = stays_feasible(tt, c1, old_timeslot, p);
+        tt->courses[c2].timeslot = old_timeslot;
+        tt->courses[c2].room = old_room;
+
+
+        old_room = tt->courses[c1].room;
+        old_timeslot = tt->courses[c1].timeslot;
+        tt->courses[c1].timeslot = -1;
+        tt->courses[c1].room = -1;
+        int c2_room = stays_feasible(tt, c2, old_timeslot, p);
+        tt->courses[c1].timeslot = old_timeslot;
+        tt->courses[c1].room = old_room;
+        if (c1_room != -1 && c2_room != -1){
+            move_course(tt, c1, tt->courses[c2].timeslot, c1_room);
+            move_course(tt, c2, old_timeslot, c2_room);
+            break;
+        } else {
+            c++;
+            if (c > tt->size * (tt->size/2))
+                break;
+        }
+    }
+
+    // N2 - Move random course to random slot
+    c = 0;
+    bool r = move_course_randomly(tt, rand() % tt->size, p);
+    while (!r){
+        c++;
+        if (c > tt->size * tt->size/2)
+            break; // Do not try to move until end of time
+        r = move_course_randomly(tt, rand() % tt->size, p);
+    }
+
+    // N3 - Swap all courses of two random timeslots
+    signed t1 = rand() % TIMESLOTS;
+    signed t2 = rand() % TIMESLOTS;
+    while (t1 == t2)
+        t2 = rand() % TIMESLOTS;
+    for(int i = 0; i < tt->size; i++){
+        if (tt->courses[i].timeslot == t1)
+            tt->courses[i].timeslot = t2;
+        else if (tt->courses[i].timeslot == t2)
+            tt->courses[i].timeslot = t1;
+    }
+
+    //TODO N4 - sth
+    //TODO N5 - Move highest penalty course from 10% of random to random slot
+    //TODO N6 - N5 with 20%
+    //TODO N7 - N5 but to slot, that generates lowest penalty
+    //TODO N8 - N7 with 20 percents
+    //TODO N9 - kempe chain on random course and random timeslot
+    //TODO N10 - N9 but use highest penalty course from 5% of random courses
+    //TODO N11 - N10 with 20%
 }
 
 // Roulette wheel for new  population
