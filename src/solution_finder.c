@@ -351,6 +351,7 @@ color_graph:
                         teardown(copy[i].colors);
                         teardown(copy[i].courses);
                     }
+                    free(copy);
                 }
                 // Save copy of old solution
                 copy = (sgt_t*)safe_malloc(sizeof(sgt_t) * students_count(p));
@@ -400,6 +401,18 @@ color_graph:
     for (int i = 0; i < TIMESLOTS; i++)
         teardown(timeslots[i]);
     free(timeslots);
+
+    if (!no_copy){
+        for (int i = 0; i < student_count; i++){
+            teardown(copy[i].colors);
+            teardown(copy[i].courses);
+        }
+    }
+    for (int i = 0; i < events_count(p); i++)
+        teardown(rooms[i]);
+
+    free(rooms);
+    free(copy);
 
     return true;
 }
