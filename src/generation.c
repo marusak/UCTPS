@@ -7,7 +7,7 @@ int generation(timetable_t** tts, int n, problem_t* p){
     int pool_size = mutate(tts, n, p, pool);
     for (int i = 0; i < n; i++)
         local_improvement(tts[i]);
-    roulette(tts, pool, n, pool_size);
+    roulette(tts, pool, n, pool_size, p);
     timetable_t* tt = best_timetable(tts, n, p);
     return count_score(tt, p);
 }
@@ -54,8 +54,46 @@ void local_improvement(timetable_t* tt){
 }
 
 // Roulette wheel for new  population
-void roulette(timetable_t** tts, timetable_t** pool, int basic_size, int pool_size){
-    //TODO
+void roulette(timetable_t** tts, timetable_t** pool, int basic_size, int pool_size, problem_t *p){
+    // Find and sum all scores
+    int sum = 0;
+    for (int i = 0; i < basic_size; i++){
+        tmp1[i] = count_score(tts[i], p);
+        sum += tmp1[i];
+    }
+    for (int i = 0; i < pool_size; i++){
+        tmp1[basic_size + i] = count_score(pool[i], p);
+        sum += tmp1[basic_size + i];
+    }
+    for (int i = 0; i < pool_size; i++){
+        unsigned gen = rand() % sum;
+        for (int j = 0; j < basic_size; j++) {
+            gen -= tmp1[j];
+            if (gen <= 0) {
+                delete_timetable(tts[j]);
+                tts[j] = pool[pool_size - 1];
+                sum -= tmp1[j];
+                tmp1[j] = tmp1[pool_size - 1];
+                pool_size--;
+                break;
+            }
+        }
+        for (int j = 0; j < pool_size; j++) {
+            gen -= tmp1[basic_size + j];
+            if (gen <= 0) {
+                delete_timetable(pool[basic_size + j]);
+                sum -= tmp1[basic_size + j];
+                if (basic_size + j != pool_size -1){
+                    pool[basic_size + j] = pool[pool_size - 1];
+                    tmp1[basic_size + j] = tmp1[pool_size - 1];
+                }
+                pool_size--;
+                break;
+            }
+        }
+        if (gen > 0)
+            error("Internal roulette error", INTERNAL_ERROR);
+    }
 }
 
 int count_conseq(int* tmp, int from, int to, int count){
@@ -94,41 +132,41 @@ int count_score(timetable_t* tt, problem_t* p){
         int* se = student_events(p, s);
         for (int j = 0; j < tt->size; j++){
             if (se[j] == 1){ // Student has course
-                tmp[count] = tt->courses[j].timeslot; // save timeslot
+                tmp1[count] = tt->courses[j].timeslot; // save timeslot
                 count++;
             }
         }
-        qsort(tmp, count, sizeof(int), compare);
+        qsort(tmp1, count, sizeof(int), compare);
 
         // Student has only one course a day
-        if (count_between(tmp, 0, 8, count) == 1)
+        if (count_between(tmp1, 0, 8, count) == 1)
             score++;
-        if (count_between(tmp, 9, 17, count) == 1)
+        if (count_between(tmp1, 9, 17, count) == 1)
             score++;
-        if (count_between(tmp, 18, 26, count) == 1)
+        if (count_between(tmp1, 18, 26, count) == 1)
             score++;
-        if (count_between(tmp, 27, 35, count) == 1)
+        if (count_between(tmp1, 27, 35, count) == 1)
             score++;
-        if (count_between(tmp, 36, 44, count) == 1)
+        if (count_between(tmp1, 36, 44, count) == 1)
             score++;
 
         // More than two consecutive courses
-        score += count_conseq(tmp, 0, 8, count);
-        score += count_conseq(tmp, 9, 17, count);
-        score += count_conseq(tmp, 18, 26, count);
-        score += count_conseq(tmp, 27, 35, count);
-        score += count_conseq(tmp, 36, 44, count);
+        score += count_conseq(tmp1, 0, 8, count);
+        score += count_conseq(tmp1, 9, 17, count);
+        score += count_conseq(tmp1, 18, 26, count);
+        score += count_conseq(tmp1, 27, 35, count);
+        score += count_conseq(tmp1, 36, 44, count);
 
         // Student has course on the last timeslot of day
-        if (has_value(tmp, 8, count))
+        if (has_value(tmp1, 8, count))
             score++;
-        if (has_value(tmp, 17, count))
+        if (has_value(tmp1, 17, count))
             score++;
-        if (has_value(tmp, 26, count))
+        if (has_value(tmp1, 26, count))
             score++;
-        if (has_value(tmp, 35, count))
+        if (has_value(tmp1, 35, count))
             score++;
-        if (has_value(tmp, 44, count))
+        if (has_value(tmp1, 44, count))
             score++;
     }
     return score;
