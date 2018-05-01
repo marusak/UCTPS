@@ -57,13 +57,18 @@ void local_improvement(timetable_t* tt){
 void roulette(timetable_t** tts, timetable_t** pool, int basic_size, int pool_size, problem_t *p){
     // Find and sum all scores
     int sum = 0;
+    int min = 1000000000;
     for (int i = 0; i < basic_size; i++){
         tmp2[i] = count_score(tts[i], p);
         sum += tmp2[i];
+        if (tmp2[i] < min)
+            min = tmp2[i];
     }
     for (int i = 0; i < pool_size; i++){
         tmp2[basic_size + i] = count_score(pool[i], p);
         sum += tmp2[basic_size + i];
+        if (tmp2[basic_size + i] < min)
+            min = tmp2[basic_size + i];
     }
     int to_del = pool_size;
     for (int i = 0; i < to_del; i++){
@@ -72,11 +77,13 @@ void roulette(timetable_t** tts, timetable_t** pool, int basic_size, int pool_si
         for (int j = 0; j < basic_size; j++) {
             gen -= tmp2[j];
             if (gen <= 0) {
-                delete_timetable(tts[j]);
-                tts[j] = pool[pool_size - 1];
-                sum -= tmp2[j];
-                tmp2[j] = tmp2[pool_size - 1];
-                pool_size--;
+                if (tmp2[j] > min) {
+                    delete_timetable(tts[j]);
+                    tts[j] = pool[pool_size - 1];
+                    sum -= tmp2[j];
+                    tmp2[j] = tmp2[pool_size - 1];
+                    pool_size--;
+                }
                 found = true;
                 break;
             }
@@ -89,11 +96,13 @@ void roulette(timetable_t** tts, timetable_t** pool, int basic_size, int pool_si
                 // FIXME
                 //delete_timetable(pool[basic_size + j]);
                 sum -= tmp2[basic_size + j];
-                if (basic_size + j != pool_size -1){
-                    pool[basic_size + j] = pool[pool_size - 1];
-                    tmp2[basic_size + j] = tmp2[pool_size - 1];
+                if (tmp2[basic_size + j] > min) {
+                    if (basic_size + j != pool_size -1){
+                        pool[basic_size + j] = pool[pool_size - 1];
+                        tmp2[basic_size + j] = tmp2[pool_size - 1];
+                    }
+                    pool_size--;
                 }
-                pool_size--;
                 found = true;
                 break;
             }

@@ -252,7 +252,7 @@ bool find_feasible_timetable(problem_t *p, timetable_t** tt){
 color_graph:
     count = 0;
     uncolored_students = count_uncolored_students(students);
-    while (uncolored_students > 0 && count < 5000){ // TODO debug this magic number
+    while (uncolored_students > 0 && count < 5000){
         // Select random student
         sgt_t* s = students + rand() % students_count(p);
 
