@@ -247,7 +247,7 @@ bool find_feasible_timetable(problem_t *p, timetable_t** tt){
         rooms[i] = find_appropraite_rooms(p, i);
 
     int count; // we cannot try constructing feasible solution until end of time
-    int last_i = 0;
+    int last_i = -100;
 
 color_graph:
     count = 0;
