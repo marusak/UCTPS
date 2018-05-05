@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
     }
 
     int penalty = 100;
-    int remaining_generations = 250;
+    int remaining_generations = 250000;
     int print_n = 0;
     while(penalty != 0 && remaining_generations > 0){
         penalty = generation(tts, N, p);
