@@ -15,3 +15,6 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
 
 clean:
 	rm -rf $(BUILD_DIR)
+
+zip:
+	zip xmarus06.zip src/* uctps.c doc.pdf tests/* Makefile
