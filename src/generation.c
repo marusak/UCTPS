@@ -57,10 +57,7 @@ int mutate(timetable_t** tts, int n, problem_t* p, timetable_t** pool){
 // Find improved solutions
 void local_improvement(timetable_t* tt, problem_t* p){
     int c = 0;
-    signed tj = rand() % TIMESLOTS;
-    signed ti = rand() % TIMESLOTS;
-    signed t1 = rand() % TIMESLOTS;
-    signed t2 = rand() % TIMESLOTS;
+    // N1 - Swap timeslots of two random courses
     while(1){
         int c1 = rand() % tt->size;
         int c2 = rand() % tt->size;
@@ -93,6 +90,8 @@ void local_improvement(timetable_t* tt, problem_t* p){
                 break;
         }
     }
+
+    // N2 - Move random course to random slot
     c = 0;
     bool r = move_course_randomly(tt, rand() % tt->size, p);
     while (!r){
@@ -101,6 +100,10 @@ void local_improvement(timetable_t* tt, problem_t* p){
             break; // Do not try to move until end of time
         r = move_course_randomly(tt, rand() % tt->size, p);
     }
+
+    // N3 - Swap all courses of two random timeslots
+    signed t1 = rand() % TIMESLOTS;
+    signed t2 = rand() % TIMESLOTS;
     while (t1 == t2)
         t2 = rand() % TIMESLOTS;
     for(int i = 0; i < tt->size; i++){
@@ -109,6 +112,10 @@ void local_improvement(timetable_t* tt, problem_t* p){
         else if (tt->courses[i].timeslot == t2)
             tt->courses[i].timeslot = t1;
     }
+
+    //TODO N4 - Rotate events in randomly selected part of timetable
+    signed tj = rand() % TIMESLOTS;
+    signed ti = rand() % TIMESLOTS;
     while (ti == tj)
         ti = rand() % TIMESLOTS;
     if (ti > tj){
@@ -122,6 +129,17 @@ void local_improvement(timetable_t* tt, problem_t* p){
         else if (tt->courses[i].timeslot > ti && tt->courses[i].timeslot <= tj)
             tt->courses[i].timeslot = tt->courses[i].timeslot - 1;
     }
+
+    //
+
+    //TODO N5 - Move highest penalty course from 10% of random to random slot
+    //TODO N6 - N5 with 20%
+    //TODO N7 - N5 but to slot, that generates lowest penalty
+    //TODO N8 - N7 with 20 percents
+
+    //TODO N9 - kempe chain on random course and random timeslot
+    //TODO N10 - N9 but use highest penalty course from 5% of random courses
+    //TODO N11 - N10 with 20%
 }
 
 // Roulette wheel for new  population
